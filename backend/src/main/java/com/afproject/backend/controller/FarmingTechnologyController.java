@@ -1,7 +1,7 @@
 package com.afproject.backend.controller;
 
 import com.afproject.backend.model.dto.ToolDto;
-import com.afproject.backend.service.ToolService;
+import com.afproject.backend.service.FarmingTechnologyService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,11 +9,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tools")
 @CrossOrigin
-public class ToolController {
+public class FarmingTechnologyController {
 
-    private final ToolService toolService;
+    private final FarmingTechnologyService toolService;
 
-    public ToolController(ToolService toolService) {
+    public FarmingTechnologyController(FarmingTechnologyService toolService) {
         this.toolService = toolService;
     }
 

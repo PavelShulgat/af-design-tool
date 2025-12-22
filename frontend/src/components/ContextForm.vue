@@ -2,7 +2,7 @@
   <div class="form-grid">
     <!-- Step 1 -->
     <div class="form-block">
-      <h2>Step 1 – System type</h2>
+      <h2>Step 1 – Agroforestry type</h2>
       <select v-model="localTypeId">
         <option disabled value="">Choose agroforestry type…</option>
         <option
@@ -20,7 +20,7 @@
       <h2>Step 2 – Context</h2>
 
       <p v-if="!hasType" class="hint">
-        First select a system type in Step&nbsp;1.
+        First select an agroforestry type in Step&nbsp;1.
       </p>
 
       <label class="field">
@@ -28,7 +28,7 @@
         <select v-model="localTreeId" :disabled="!hasType">
           <option disabled value="">Choose tree…</option>
           <option
-            v-for="tree in trees"
+            v-for="tree in filteredTrees"
             :key="tree.id"
             :value="tree.id"
           >
@@ -38,15 +38,12 @@
       </label>
 
       <!-- Silvo-arable: tree + crop/plant -->
-      <label
-        v-if="isSilvoArable"
-        class="field"
-      >
+      <label v-if="isSilvoArable" class="field">
         <span>Crop / plant</span>
         <select v-model="localPlantId" :disabled="!hasType">
           <option disabled value="">Choose crop / plant…</option>
           <option
-            v-for="plant in plants"
+            v-for="plant in filteredPlants"
             :key="plant.id"
             :value="plant.id"
           >
@@ -56,16 +53,33 @@
       </label>
 
       <!-- Silvopastoral: tree + livestock (future) -->
-      <div
-        v-else-if="isSilvopastoral"
-        class="field placeholder"
-      >
+      <div v-else-if="isSilvopastoral" class="field placeholder">
         <span>Livestock</span>
         <div class="placeholder-box">
-          Livestock selection will be added in the next phase.  
+          Livestock selection will be added in the next phase.
           For now, recommendations are based on tree + system type.
         </div>
       </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="form-block">
+      <h2>Step 3 – Operation</h2>
+
+      <p v-if="!hasType" class="hint">
+        Select agroforestry type first.
+      </p>
+
+      <select v-model="localOperationId" :disabled="!hasType">
+        <option disabled value="">Choose operation…</option>
+        <option
+          v-for="op in filteredOperations"
+          :key="op.id"
+          :value="op.id"
+        >
+          {{ op.name }}
+        </option>
+      </select>
     </div>
   </div>
 
@@ -79,12 +93,13 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
   types: { type: Array, default: () => [] },
   trees: { type: Array, default: () => [] },
   plants: { type: Array, default: () => [] },
+  operations: { type: Array, default: () => [] }, // NEW
   loading: { type: Boolean, default: false }
 });
 
@@ -93,6 +108,7 @@ const emit = defineEmits(['submit']);
 const localTypeId = ref('');
 const localTreeId = ref('');
 const localPlantId = ref('');
+const localOperationId = ref(''); // NEW
 
 const hasType = computed(() => !!localTypeId.value);
 
@@ -110,14 +126,44 @@ const isSilvopastoral = computed(() =>
   selectedType.value.name.toLowerCase().includes('silvopastoral')
 );
 
-// For Silvo-arable: need type + tree + plant
-// For Silvopastoral: need type + tree
+// Optional: filter trees/plants/operations based on selected type (if backend returns agroforestry_type_id)
+// If your API returns all items already scoped, these filters still work fine.
+const filteredTrees = computed(() => {
+  if (!selectedType.value) return [];
+  return props.trees.filter(t => !t.agroforestryTypeId || t.agroforestryTypeId === selectedType.value.id);
+});
+
+const filteredPlants = computed(() => {
+  if (!selectedType.value) return [];
+  return props.plants.filter(p => !p.agroforestryTypeId || p.agroforestryTypeId === selectedType.value.id);
+});
+
+const filteredOperations = computed(() => {
+  if (!selectedType.value) return [];
+
+  // If operations have agroforestryTypeId → use it
+  const byId = props.operations.filter(o => o.agroforestryTypeId === selectedType.value.id);
+  if (byId.length) return byId;
+
+  // fallback: if demo operations have agroforestryTypeName
+  const typeName = selectedType.value.name?.toLowerCase() || '';
+  return props.operations.filter(o => (o.agroforestryTypeName || '').toLowerCase() === typeName);
+});
+
+// reset dependent fields when type changes
+watch(localTypeId, () => {
+  localTreeId.value = '';
+  localPlantId.value = '';
+  localOperationId.value = '';
+});
+
 const canSubmit = computed(() => {
-  if (!hasType.value || !localTreeId.value) return false;
-  if (isSilvoArable.value) {
-    return !!localPlantId.value;
-  }
-  return true; // silvopastoral
+  if (!hasType.value) return false;
+  if (!localTreeId.value) return false;
+  if (!localOperationId.value) return false;
+
+  if (isSilvoArable.value) return !!localPlantId.value;
+  return true;
 });
 
 function submit() {
@@ -126,7 +172,8 @@ function submit() {
   emit('submit', {
     typeId: localTypeId.value,
     treeId: localTreeId.value,
-    plantId: isSilvoArable.value ? localPlantId.value : null
+    plantId: isSilvoArable.value ? localPlantId.value : null,
+    operationId: localOperationId.value
   });
 }
 </script>

@@ -10,6 +10,7 @@
         :types="types"
         :trees="trees"
         :plants="plants"
+        :operations="operations"
         :loading="loading"
         @submit="onContextSubmit"
       />
@@ -30,7 +31,8 @@ import {
   fetchAgroforestryTypes,
   fetchTrees,
   fetchPlants,
-  fetchTools
+  fetchTools,
+  // fetchOperations // <- add when backend endpoint exists
 } from '../api';
 
 import ContextForm from '../components/ContextForm.vue';
@@ -39,6 +41,7 @@ import ToolList from '../components/ToolList.vue';
 const types = ref([]);
 const trees = ref([]);
 const plants = ref([]);
+const operations = ref([]);   // NEW
 const allTools = ref([]);
 
 const recommendations = ref([]);
@@ -49,16 +52,28 @@ const error = ref('');
 onMounted(async () => {
   try {
     loading.value = true;
+
     const [tTypes, tTrees, tPlants, tTools] = await Promise.all([
       fetchAgroforestryTypes(),
       fetchTrees(),
       fetchPlants(),
       fetchTools()
+      // fetchOperations()
     ]);
+
     types.value = tTypes;
     trees.value = tTrees;
     plants.value = tPlants;
     allTools.value = tTools;
+
+    // TEMP demo operations (remove once you have fetchOperations())
+    operations.value = [
+      { id: 1, name: 'Planting', agroforestryTypeName: 'Silvo-arable' },
+      { id: 2, name: 'Weed control', agroforestryTypeName: 'Silvo-arable' },
+      { id: 3, name: 'Pruning', agroforestryTypeName: 'Silvopastoral' },
+      { id: 4, name: 'Pasture management', agroforestryTypeName: 'Silvopastoral' }
+    ];
+
   } catch (e) {
     console.error(e);
     error.value = 'Failed to load reference data from the backend.';
@@ -69,26 +84,34 @@ onMounted(async () => {
 
 function onContextSubmit(payload) {
   hasSearched.value = true;
-  const { typeId, treeId, plantId } = payload;
+
+  const { typeId, treeId, plantId, operationId } = payload;
 
   const type = types.value.find(t => t.id === typeId);
   const tree = trees.value.find(t => t.id === treeId);
-  const plant = plants.value.find(p => p.id === plantId);
+  const plant = plantId ? plants.value.find(p => p.id === plantId) : null;
+  const operation = operations.value.find(o => o.id === operationId);
 
-  if (!type || !tree || !plant) {
+  if (!type || !tree || !operation) {
     recommendations.value = [];
     return;
   }
 
-  // simple demo rule; later replace by real /recommendations endpoint
-  const isCropSystem = type.name.toLowerCase().includes('silvo')
-    && !!plant;
+  // demo rule until you have a real endpoint:
+  // - if operation is Weed control -> show weed tools
+  // - if operation is Planting -> show seeding tools
+  // - else show all
+  const op = operation.name.toLowerCase();
 
   recommendations.value = allTools.value.filter(tool => {
-    if (!tool.category) return true;
-    if (isCropSystem) {
-      return tool.category.toLowerCase().includes('precision');
-    }
+    const name = (tool.name || '').toLowerCase();
+    const desc = (tool.description || '').toLowerCase();
+
+    if (op.includes('weed')) return name.includes('hoe') || name.includes('sprayer') || desc.includes('weed');
+    if (op.includes('plant')) return name.includes('seeder') || desc.includes('seed') || desc.includes('plant');
+    if (op.includes('prun')) return name.includes('prun') || desc.includes('prun');
+    if (op.includes('pasture')) return desc.includes('pasture') || desc.includes('forage');
+
     return true;
   });
 }

@@ -1,23 +1,22 @@
 package com.afproject.backend.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "tools")
+@Table(name = "livestock")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tool {
+@Builder
+public class Livestock {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 150)
     private String name;
 
     @Column

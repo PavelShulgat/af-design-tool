@@ -1,13 +1,13 @@
 package com.afproject.backend.mapper;
 
 import com.afproject.backend.model.dto.ToolDto;
-import com.afproject.backend.model.entity.Tool;
+import com.afproject.backend.model.entity.FarmingTechnology;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ToolMapper {
+public class FarmingTechnologyMapper {
 
-    public ToolDto toDto(Tool entity) {
+    public ToolDto toDto(FarmingTechnology entity) {
         if (entity == null) return null;
         return new ToolDto(
                 entity.getId(),

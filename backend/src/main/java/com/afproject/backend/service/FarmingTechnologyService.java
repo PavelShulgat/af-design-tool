@@ -1,19 +1,19 @@
 package com.afproject.backend.service;
 
-import com.afproject.backend.mapper.ToolMapper;
+import com.afproject.backend.mapper.FarmingTechnologyMapper;
 import com.afproject.backend.model.dto.ToolDto;
-import com.afproject.backend.repository.ToolRepository;
+import com.afproject.backend.repository.FarmingTechnologyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class ToolService {
+public class FarmingTechnologyService {
 
-    private final ToolRepository toolRepository;
-    private final ToolMapper toolMapper;
+    private final FarmingTechnologyRepository toolRepository;
+    private final FarmingTechnologyMapper toolMapper;
 
-    public ToolService(ToolRepository toolRepository, ToolMapper toolMapper) {
+    public FarmingTechnologyService(FarmingTechnologyRepository toolRepository, FarmingTechnologyMapper toolMapper) {
         this.toolRepository = toolRepository;
         this.toolMapper = toolMapper;
     }
