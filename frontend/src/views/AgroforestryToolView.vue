@@ -1,11 +1,9 @@
 <template>
   <main class="page">
+    <div class="hero">
+        <h1>Agroforestry tool</h1>
+      </div>
     <section class="panel">
-      <h1>Agroforestry tool</h1>
-      <p class="subtitle">
-        Select system context and explore which machines are available from the knowledge base.
-      </p>
-
       <ContextForm
         :types="types"
         :trees="trees"
@@ -97,10 +95,6 @@ function onContextSubmit(payload) {
     return;
   }
 
-  // demo rule until you have a real endpoint:
-  // - if operation is Weed control -> show weed tools
-  // - if operation is Planting -> show seeding tools
-  // - else show all
   const op = operation.name.toLowerCase();
 
   recommendations.value = allTools.value.filter(tool => {
@@ -119,33 +113,31 @@ function onContextSubmit(payload) {
 
 <style scoped>
 .page {
-  min-height: 100vh;
-  background: #f3f4f6;
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
+  width: 100%;
+  background: #fff;
+  padding: 18px 0 80px;
 }
 
 .panel {
   width: 100%;
-  max-width: 960px;
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 2rem 2.5rem;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-h1 {
-  margin: 0 0 0.5rem;
+/* Title stays near top */
+.hero {
+  margin: 6px 0 18px;
+  text-align: center;
 }
 
-.subtitle {
-  margin: 0 0 1.5rem;
-  color: #6b7280;
-}
-
-.error {
-  margin-top: 0.75rem;
-  color: #b91c1c;
+.hero h1 {
+  margin: 0;
+  font-size: 56px;
+  line-height: 1.02;
+  letter-spacing: -0.9px;
+  color: var(--color-text);
 }
 </style>
+
+

@@ -15,6 +15,11 @@ spring:
   main:
     banner-mode: "off"
 
+security:
+    jwt:
+      secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32CHARS_MIN"
+      expiration-seconds: 3600
+
 server:
   port: 8080
 

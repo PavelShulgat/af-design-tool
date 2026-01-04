@@ -1,0 +1,45 @@
+:root {
+  /* Design tokens */
+  --color-primary: #2f8f46;
+  --color-text: #111111;
+  --color-muted: rgba(0, 0, 0, 0.65);
+  --color-border: rgba(0, 0, 0, 0.12);
+  --color-bg: #ffffff;
+
+  --radius: 14px;
+  --container: 1920px; /* “full screen” feel on wide monitors */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+body {
+  display: block;       /* IMPORTANT: not flex */
+  min-height: 100%;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: inherit; text-decoration: none; }
+button, input, select { font: inherit; }
+
+/* Utility container: full width, padded */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}

@@ -28,12 +28,14 @@ const props = defineProps({
 
 <style scoped>
 .results {
-  margin-top: 2rem;
+  margin-top: 34px;
 }
 
-.hint {
-  color: #6b7280;
-  margin-bottom: 1rem;
+.results h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
 }
 
 .tool-list {
@@ -42,33 +44,39 @@ const props = defineProps({
   margin: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
+  gap: 14px;
 }
 
 .tool-card {
-  background: #f9fafb;
-  border-radius: 0.75rem;
-  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
   border: 1px solid #e5e7eb;
 }
 
 .tool-card h3 {
-  margin: 0 0 0.25rem;
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #111;
 }
 
 .badge {
   display: inline-block;
-  padding: 0.1rem 0.6rem;
+  padding: 2px 10px;
   border-radius: 999px;
-  background: #e0f2fe;
-  color: #0369a1;
-  font-size: 0.75rem;
-  margin-bottom: 0.4rem;
+  border: 1px solid #d1d5db;
+  color: #111;
+  font-size: 12px;
+  margin-bottom: 8px;
 }
 
 .desc {
   margin: 0;
-  font-size: 0.9rem;
-  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #111;
+  opacity: 0.75;
 }
+
 </style>

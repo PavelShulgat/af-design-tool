@@ -2,6 +2,13 @@ import axios from 'axios';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+  headers: { "Content-type" : "application/json" },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });
 
 export const fetchAgroforestryTypes = () =>
@@ -18,3 +25,9 @@ export const fetchTools = () =>
 
 export const fetchOperations = () =>
   api.get('/api/operations').then(res => res.data);
+
+export const register = (payload) =>
+  api.post("/api/auth/register", payload).then((res) => res.data);
+
+export const login = ({ email, password }) =>
+  api.post("/api/auth/login", { email, password }).then((res) => res.data);
