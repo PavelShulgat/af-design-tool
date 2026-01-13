@@ -20,7 +20,7 @@
       <section class="step-card">
         <header class="step-head">
           <h2>Step 2</h2>
-          <p>Context</p>
+          <p>Flora</p>
         </header>
 
         <p v-if="!hasType" class="hint">

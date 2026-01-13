@@ -1,7 +1,7 @@
 <template>
   <main class="page">
     <div class="hero">
-        <h1>Agroforestry tool</h1>
+        <h1>Agroforestry Design Tool</h1>
       </div>
     <section class="panel">
       <ContextForm
