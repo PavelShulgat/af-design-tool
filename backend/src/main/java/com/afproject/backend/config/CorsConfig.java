@@ -15,14 +15,15 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow Netlify (prod + deploy previews) and local dev
+        // Allow Netlify (production + deploy previews) and local dev
         config.setAllowedOriginPatterns(List.of(
-                "https://melodious-selkie-ce8d85.netlify.app",
-                "http://localhost:5173"
+                "https://*.netlify.app",
+                "http://localhost:*"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization")); // optional but often useful
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
