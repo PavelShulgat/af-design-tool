@@ -14,7 +14,13 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+
+        // Allow Netlify (prod + deploy previews) and local dev
+        config.setAllowedOriginPatterns(List.of(
+                "https://melodious-selkie-ce8d85.netlify.app/",
+                "http://localhost:5173"
+        ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
