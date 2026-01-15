@@ -17,7 +17,7 @@ public class CorsConfig {
 
         // Allow Netlify (prod + deploy previews) and local dev
         config.setAllowedOriginPatterns(List.of(
-                "https://melodious-selkie-ce8d85.netlify.app/",
+                "https://melodious-selkie-ce8d85.netlify.app",
                 "http://localhost:5173"
         ));
 
