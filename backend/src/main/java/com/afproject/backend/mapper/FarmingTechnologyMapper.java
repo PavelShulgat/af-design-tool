@@ -12,7 +12,8 @@ public class FarmingTechnologyMapper {
         return new ToolDto(
                 entity.getId(),
                 entity.getName(),
-                entity.getDescription()
+                entity.getDescription(),
+                entity.getInfo()
         );
     }
 }

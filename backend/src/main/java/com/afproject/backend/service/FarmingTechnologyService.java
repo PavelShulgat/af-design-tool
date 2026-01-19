@@ -27,6 +27,6 @@ public class FarmingTechnologyService {
     public ToolDto getToolById(Long id) {
         return toolRepository.findById(id)
                 .map(toolMapper::toDto)
-                .orElse(null); // later you can throw 404
+                .orElse(null); 
     }
 }

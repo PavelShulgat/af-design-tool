@@ -22,4 +22,7 @@ public class FarmingTechnology {
 
     @Column
     private String description;
+
+    @Column
+    private String info;
 }
