@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 
+import com.afproject.backend.model.entity.User;
+
 @Component
 public class JwtService {
 
@@ -32,17 +34,17 @@ public class JwtService {
         this.expirationSeconds = expirationSeconds;
     }
 
-    public String generateToken(String subject) {
+    public String generateToken(User user) {
         Instant now = Instant.now();
         return Jwts.builder()
-                .subject(subject)
+                .subject(user.getEmail())
+                .claim("role", user.getRole())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(expirationSeconds)))
                 .signWith(key)
                 .compact();
     }
 
-    // naming most people use in filters
     public String extractUsername(String token) {
         return extractSubject(token);
     }

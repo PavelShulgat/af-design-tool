@@ -1,6 +1,7 @@
 package com.afproject.backend.service;
 
 import com.afproject.backend.mapper.FarmingTechnologyMapper;
+import com.afproject.backend.model.dto.ToolDetailsDto;
 import com.afproject.backend.model.dto.ToolDto;
 import com.afproject.backend.repository.FarmingTechnologyRepository;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,12 @@ public class FarmingTechnologyService {
         return toolRepository.findById(id)
                 .map(toolMapper::toDto)
                 .orElse(null); 
+    }
+
+    public ToolDetailsDto getToolDetails(Long id) {
+        var entity = toolRepository.findByIdWithType(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tool not found: " + id));
+
+        return toolMapper.toDetailsDto(entity);
     }
 }

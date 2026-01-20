@@ -10,7 +10,7 @@
 
         <select v-model="localTypeId">
           <option disabled value="">Choose agroforestry type…</option>
-          <option v-for="type in types" :key="type.id" :value="type.id">
+          <option v-for="type in types" :key="type.id" :value="String(type.id)">
             {{ type.name }}
           </option>
         </select>
@@ -31,29 +31,33 @@
           <span>Tree species</span>
           <select v-model="localTreeId" :disabled="!hasType">
             <option disabled value="">Choose tree…</option>
-            <option v-for="tree in filteredTrees" :key="tree.id" :value="tree.id">
+            <option v-for="tree in filteredTrees" :key="tree.id" :value="String(tree.id)">
               {{ tree.name }}
             </option>
           </select>
         </label>
 
+        <!-- Silvo-arable -->
         <label v-if="isSilvoArable" class="field">
           <span>Crop / plant</span>
-          <select v-model="localPlantId" :disabled="!hasType">
+          <select v-model="localPlantId" :disabled="!hasType || !localTreeId">
             <option disabled value="">Choose crop / plant…</option>
-            <option v-for="plant in filteredPlants" :key="plant.id" :value="plant.id">
+            <option v-for="plant in filteredPlants" :key="plant.id" :value="String(plant.id)">
               {{ plant.name }}
             </option>
           </select>
         </label>
 
-        <div v-else-if="isSilvopastoral" class="field placeholder">
+        <!-- Silvopastoral -->
+        <label v-else-if="isSilvopastoral" class="field">
           <span>Livestock</span>
-          <div class="placeholder-box">
-            Livestock selection will be added in the next phase.
-            For now, recommendations are based on tree + system type.
-          </div>
-        </div>
+          <select v-model="localLivestockId" :disabled="!hasType || !localTreeId">
+            <option disabled value="">Choose livestock…</option>
+            <option v-for="l in filteredLivestock" :key="l.id" :value="String(l.id)">
+              {{ l.name }}
+            </option>
+          </select>
+        </label>
       </section>
 
       <!-- Step 3 -->
@@ -67,7 +71,7 @@
 
         <select v-model="localOperationId" :disabled="!hasType">
           <option disabled value="">Choose operation…</option>
-          <option v-for="op in filteredOperations" :key="op.id" :value="op.id">
+          <option v-for="op in filteredOperations" :key="op.id" :value="String(op.id)">
             {{ op.name }}
           </option>
         </select>
@@ -89,6 +93,7 @@ const props = defineProps({
   types: { type: Array, default: () => [] },
   trees: { type: Array, default: () => [] },
   plants: { type: Array, default: () => [] },
+  livestock: { type: Array, default: () => [] }, // ✅ NEW
   operations: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
 });
@@ -98,12 +103,13 @@ const emit = defineEmits(["submit"]);
 const localTypeId = ref("");
 const localTreeId = ref("");
 const localPlantId = ref("");
+const localLivestockId = ref(""); // ✅ NEW
 const localOperationId = ref("");
 
 const hasType = computed(() => !!localTypeId.value);
 
 const selectedType = computed(() =>
-  props.types.find((t) => t.id === localTypeId.value)
+  props.types.find((t) => String(t.id) === String(localTypeId.value))
 );
 
 const isSilvoArable = computed(
@@ -117,14 +123,22 @@ const isSilvopastoral = computed(
 const filteredTrees = computed(() => {
   if (!selectedType.value) return [];
   return props.trees.filter(
-    (t) => !t.agroforestryTypeId || t.agroforestryTypeId === selectedType.value.id
+    (t) => !t.agroforestryTypeId || String(t.agroforestryTypeId) === String(selectedType.value.id)
   );
 });
 
 const filteredPlants = computed(() => {
   if (!selectedType.value) return [];
   return props.plants.filter(
-    (p) => !p.agroforestryTypeId || p.agroforestryTypeId === selectedType.value.id
+    (p) => !p.agroforestryTypeId || String(p.agroforestryTypeId) === String(selectedType.value.id)
+  );
+});
+
+// Most likely livestock is NOT type-filtered in DB yet, but we keep the same pattern.
+const filteredLivestock = computed(() => {
+  if (!selectedType.value) return [];
+  return props.livestock.filter(
+    (l) => !l.agroforestryTypeId || String(l.agroforestryTypeId) === String(selectedType.value.id)
   );
 });
 
@@ -132,7 +146,7 @@ const filteredOperations = computed(() => {
   if (!selectedType.value) return [];
 
   const byId = props.operations.filter(
-    (o) => o.agroforestryTypeId === selectedType.value.id
+    (o) => String(o.agroforestryTypeId) === String(selectedType.value.id)
   );
   if (byId.length) return byId;
 
@@ -145,7 +159,13 @@ const filteredOperations = computed(() => {
 watch(localTypeId, () => {
   localTreeId.value = "";
   localPlantId.value = "";
+  localLivestockId.value = ""; // ✅ reset
   localOperationId.value = "";
+});
+
+watch(localTreeId, () => {
+  localPlantId.value = "";
+  localLivestockId.value = "";
 });
 
 const canSubmit = computed(() => {
@@ -154,29 +174,32 @@ const canSubmit = computed(() => {
   if (!localOperationId.value) return false;
 
   if (isSilvoArable.value) return !!localPlantId.value;
-  return true;
+  if (isSilvopastoral.value) return !!localLivestockId.value;
+
+  return false;
 });
 
 function submit() {
   if (!canSubmit.value) return;
 
   emit("submit", {
-    typeId: localTypeId.value,
-    treeId: localTreeId.value,
-    plantId: isSilvoArable.value ? localPlantId.value : null,
-    operationId: localOperationId.value,
+    typeId: Number(localTypeId.value),
+    treeId: Number(localTreeId.value),
+    plantId: isSilvoArable.value ? Number(localPlantId.value) : null,
+    livestockId: isSilvopastoral.value ? Number(localLivestockId.value) : null,
+    operationId: Number(localOperationId.value),
   });
 }
 </script>
 
 <style scoped>
+/* unchanged styles from your file */
 .steps-wrap {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-/* ✅ equal width columns */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -262,16 +285,6 @@ select:disabled {
 
 .hint {
   margin: 2px 0 6px;
-  font-size: 13px;
-  color: var(--color-muted);
-}
-
-.placeholder-box {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px dashed var(--color-border);
-  background: #fff;
   font-size: 13px;
   color: var(--color-muted);
 }

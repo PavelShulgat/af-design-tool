@@ -10,6 +10,7 @@
         :plants="plants"
         :operations="operations"
         :loading="loading"
+        :livestock="livestock"
         @submit="onContextSubmit"
       />
 
@@ -24,57 +25,58 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from "vue";
 import {
   fetchAgroforestryTypes,
   fetchTrees,
   fetchPlants,
   fetchTools,
-  // fetchOperations // <- add when backend endpoint exists
-} from '../api';
+  fetchLivestock, // ✅ add
+} from "../api";
 
-import ContextForm from '../components/ContextForm.vue';
-import ToolList from '../components/ToolList.vue';
+import ContextForm from "../components/ContextForm.vue";
+import ToolList from "../components/ToolList.vue";
 
 const types = ref([]);
 const trees = ref([]);
 const plants = ref([]);
-const operations = ref([]);   // NEW
+const livestock = ref([]); // ✅ add
+const operations = ref([]);
 const allTools = ref([]);
 
 const recommendations = ref([]);
 const hasSearched = ref(false);
 const loading = ref(false);
-const error = ref('');
+const error = ref("");
 
 onMounted(async () => {
   try {
     loading.value = true;
 
-    const [tTypes, tTrees, tPlants, tTools] = await Promise.all([
+    const [tTypes, tTrees, tPlants, tLivestock, tTools] = await Promise.all([
       fetchAgroforestryTypes(),
       fetchTrees(),
       fetchPlants(),
-      fetchTools()
-      // fetchOperations()
+      fetchLivestock(), // ✅ add
+      fetchTools(),
     ]);
 
     types.value = tTypes;
     trees.value = tTrees;
     plants.value = tPlants;
+    livestock.value = tLivestock; // ✅ add
     allTools.value = tTools;
 
     // TEMP demo operations (remove once you have fetchOperations())
     operations.value = [
-      { id: 1, name: 'Planting', agroforestryTypeName: 'Silvo-arable' },
-      { id: 2, name: 'Weed control', agroforestryTypeName: 'Silvo-arable' },
-      { id: 3, name: 'Pruning', agroforestryTypeName: 'Silvopastoral' },
-      { id: 4, name: 'Pasture management', agroforestryTypeName: 'Silvopastoral' }
+      { id: 1, name: "Planting", agroforestryTypeName: "Silvo-arable" },
+      { id: 2, name: "Weed control", agroforestryTypeName: "Silvo-arable" },
+      { id: 3, name: "Pruning", agroforestryTypeName: "Silvopastoral" },
+      { id: 4, name: "Pasture management", agroforestryTypeName: "Silvopastoral" },
     ];
-
   } catch (e) {
     console.error(e);
-    error.value = 'Failed to load reference data from the backend.';
+    error.value = "Failed to load reference data from the backend.";
   } finally {
     loading.value = false;
   }
@@ -83,12 +85,13 @@ onMounted(async () => {
 function onContextSubmit(payload) {
   hasSearched.value = true;
 
-  const { typeId, treeId, plantId, operationId } = payload;
+  const { typeId, treeId, plantId, livestockId, operationId } = payload;
 
-  const type = types.value.find(t => t.id === typeId);
-  const tree = trees.value.find(t => t.id === treeId);
-  const plant = plantId ? plants.value.find(p => p.id === plantId) : null;
-  const operation = operations.value.find(o => o.id === operationId);
+  const type = types.value.find((t) => t.id === typeId);
+  const tree = trees.value.find((t) => t.id === treeId);
+  const plant = plantId ? plants.value.find((p) => p.id === plantId) : null;
+  const animal = livestockId ? livestock.value.find((l) => l.id === livestockId) : null;
+  const operation = operations.value.find((o) => o.id === operationId);
 
   if (!type || !tree || !operation) {
     recommendations.value = [];
@@ -97,14 +100,16 @@ function onContextSubmit(payload) {
 
   const op = operation.name.toLowerCase();
 
-  recommendations.value = allTools.value.filter(tool => {
-    const name = (tool.name || '').toLowerCase();
-    const desc = (tool.description || '').toLowerCase();
+  recommendations.value = allTools.value.filter((tool) => {
+    const name = (tool.name || "").toLowerCase();
+    const desc = (tool.description || "").toLowerCase();
 
-    if (op.includes('weed')) return name.includes('hoe') || name.includes('sprayer') || desc.includes('weed');
-    if (op.includes('plant')) return name.includes('seeder') || desc.includes('seed') || desc.includes('plant');
-    if (op.includes('prun')) return name.includes('prun') || desc.includes('prun');
-    if (op.includes('pasture')) return desc.includes('pasture') || desc.includes('forage');
+    // You can improve logic later to use DB combos;
+    // for now we keep your keyword-based filtering.
+    if (op.includes("weed")) return name.includes("hoe") || name.includes("sprayer") || desc.includes("weed");
+    if (op.includes("plant")) return name.includes("seeder") || desc.includes("seed") || desc.includes("plant");
+    if (op.includes("prun")) return name.includes("prun") || desc.includes("prun");
+    if (op.includes("pasture")) return desc.includes("pasture") || desc.includes("forage") || !!animal;
 
     return true;
   });

@@ -10,6 +10,8 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -45,8 +47,11 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(email, req.getPassword())
         );
 
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalStateException("User not found"));
+
         return AuthResponse.builder()
-                .accessToken(jwtService.generateToken(email))
+                .accessToken(jwtService.generateToken(user))
                 .tokenType("Bearer")
                 .build();
     }

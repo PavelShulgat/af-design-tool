@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown" ref="root">
-    <button class="btn" type="button" @click="open = !open">
+    <button class="btn" :class="variantClass" type="button" @click="open = !open">
       {{ title }}
       <span class="chev" :class="{ up: open }">▾</span>
     </button>
@@ -20,13 +20,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps({
   title: { type: String, default: "Menu" },
-  items: { type: Array, default: () => [] }, // [{label,to}]
+  items: { type: Array, default: () => [] }, 
+  variant: { type: String, default: "solid" },
 });
+
+const variantClass = computed(() =>
+  props.variant === "ghost" ? "btn-ghost" : "btn-solid"
+);
 
 const router = useRouter();
 const open = ref(false);
@@ -52,20 +57,30 @@ onBeforeUnmount(() => document.removeEventListener("click", onClickOutside));
 }
 
 .btn {
-  border: 0;
-  background: var(--green);
-  color: #fff;
-  font-weight: 800;
+  border-radius: var(--radius);
   padding: 10px 14px;
-  border-radius: 10px;
+  font-weight: 800;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: #111;
   cursor: pointer;
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.btn:hover {
-  background: var(--green-dark);
+.btn-ghost:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.btn-solid {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.btn-solid:hover {
+  opacity: 0.92;
 }
 
 .chev {

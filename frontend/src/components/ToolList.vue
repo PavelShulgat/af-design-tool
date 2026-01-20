@@ -3,10 +3,15 @@
     <h2>Recommended machines</h2>
 
     <ul class="tool-list">
-      <li v-for="tool in tools" :key="tool.id" class="tool-card">
-        <h3>{{ tool.name }}</h3>
-        <p v-if="tool.category" class="badge">{{ tool.category }}</p>
-        <p class="desc">{{ tool.description || 'No description yet.' }}</p>
+      <li v-for="tool in tools" :key="tool.id">
+        <router-link
+          class="tool-card tool-link"
+          :to="{ name: 'tool-details', params: { id: tool.id } }"
+        >
+          <h3>{{ tool.name }}</h3>
+          <p v-if="tool.category" class="badge">{{ tool.category }}</p>
+          <p class="desc">{{ tool.description || 'No description yet.' }}</p>
+        </router-link>
       </li>
     </ul>
   </section>
@@ -47,11 +52,30 @@ const props = defineProps({
   gap: 14px;
 }
 
+/* moved card styles to the router-link */
 .tool-card {
   background: #fff;
   border-radius: 12px;
   padding: 14px;
   border: 1px solid #e5e7eb;
+}
+
+.tool-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.tool-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+}
+
+.tool-link:focus-visible {
+  outline: 3px solid rgba(59,130,246,0.5);
+  outline-offset: 3px;
 }
 
 .tool-card h3 {
@@ -78,5 +102,4 @@ const props = defineProps({
   color: #111;
   opacity: 0.75;
 }
-
 </style>

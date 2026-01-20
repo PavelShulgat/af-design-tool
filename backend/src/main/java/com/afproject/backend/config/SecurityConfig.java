@@ -33,7 +33,9 @@ public class SecurityConfig {
                                 "/api/trees",
                                 "/api/plants",
                                 "/api/tools",
-                                "/api/operations"
+                                "/api/operations",
+                                "/api/tools/**",
+                                "/api/livestock"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -5,6 +5,15 @@
         AF Design Tool
       </button>
 
+      <NavDropdown
+          v-if="auth.isAuthenticated && auth.isAdmin"
+          title="Manage tables"
+          :items="adminItems"
+          variant="ghost"
+        />
+
+      <div class="spacer"></div>
+
       <div class="right">
         <template v-if="auth.isAuthenticated">
           <button class="btn btn-ghost" type="button">
@@ -30,9 +39,14 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
+import NavDropdown from "./NavDropdown.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
+
+const adminItems = [
+  { label: "Manage tables", to: "/admin" },
+];
 
 const goHome = () => router.push("/");
 const goLogin = () => router.push("/login");
@@ -53,7 +67,7 @@ const logout = () => {
 .hdr-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 16px;
   padding-top: 12px;
 }
@@ -83,6 +97,7 @@ const logout = () => {
   background: #fff;
   color: #111;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-ghost:hover {
@@ -104,5 +119,9 @@ const logout = () => {
   height: 3px;
   width: 100%;
   background: var(--color-primary);
+}
+
+.spacer {
+  flex: 1;
 }
 </style>

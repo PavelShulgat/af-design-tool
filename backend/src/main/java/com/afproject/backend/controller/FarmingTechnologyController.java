@@ -1,5 +1,6 @@
 package com.afproject.backend.controller;
 
+import com.afproject.backend.model.dto.ToolDetailsDto;
 import com.afproject.backend.model.dto.ToolDto;
 import com.afproject.backend.service.FarmingTechnologyService;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class FarmingTechnologyController {
     }
 
     @GetMapping("/{id}")
-    public ToolDto getTool(@PathVariable Long id) {
-        return toolService.getToolById(id);
+    public ToolDetailsDto getById(@PathVariable Long id) {
+        return toolService.getToolDetails(id);
     }
 }

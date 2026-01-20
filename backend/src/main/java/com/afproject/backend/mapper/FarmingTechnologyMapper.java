@@ -1,5 +1,6 @@
 package com.afproject.backend.mapper;
 
+import com.afproject.backend.model.dto.ToolDetailsDto;
 import com.afproject.backend.model.dto.ToolDto;
 import com.afproject.backend.model.entity.FarmingTechnology;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,23 @@ public class FarmingTechnologyMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getInfo()
+        );
+    }
+
+    public ToolDetailsDto toDetailsDto(FarmingTechnology entity) {
+        if (entity == null) return null;
+
+        String typeName = null;
+        if (entity.getType() != null) { 
+            typeName = entity.getType().getName();
+        }
+
+        return new ToolDetailsDto(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getInfo(),
+                typeName
         );
     }
 }

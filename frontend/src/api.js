@@ -31,3 +31,5 @@ export const register = (payload) =>
 
 export const login = ({ email, password }) =>
   api.post("/api/auth/login", { email, password }).then((res) => res.data);
+
+export const fetchLivestock = () => api.get("/api/livestock").then(r => r.data);
