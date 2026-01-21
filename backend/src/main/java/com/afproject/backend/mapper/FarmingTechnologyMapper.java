@@ -31,7 +31,8 @@ public class FarmingTechnologyMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getInfo(),
-                typeName
+                typeName,
+                entity.getImage_path()
         );
     }
 }

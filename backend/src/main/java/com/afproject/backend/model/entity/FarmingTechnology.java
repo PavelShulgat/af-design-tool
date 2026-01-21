@@ -29,4 +29,7 @@ public class FarmingTechnology {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "farming_technology_type_id", nullable = false)
     private FarmingTechnologyType type;
+
+    @Column
+    private String image_path;
 }

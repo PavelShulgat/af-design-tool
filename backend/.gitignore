@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### env ###
+.env
+.env.*
+.env.neon
+src/main/java/com/afproject/backend/.env.neon

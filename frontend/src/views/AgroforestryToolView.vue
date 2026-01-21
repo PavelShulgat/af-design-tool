@@ -105,7 +105,6 @@ function onContextSubmit(payload) {
     const desc = (tool.description || "").toLowerCase();
 
     // You can improve logic later to use DB combos;
-    // for now we keep your keyword-based filtering.
     if (op.includes("weed")) return name.includes("hoe") || name.includes("sprayer") || desc.includes("weed");
     if (op.includes("plant")) return name.includes("seeder") || desc.includes("seed") || desc.includes("plant");
     if (op.includes("prun")) return name.includes("prun") || desc.includes("prun");

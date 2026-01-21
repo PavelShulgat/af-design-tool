@@ -5,6 +5,7 @@ package com.afproject.backend.model.dto;
         String name,
         String description,
         String info,
-        String typeName
+        String typeName,
+        String image_path
 ) {}
 
